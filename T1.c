@@ -7,7 +7,7 @@
 typedef float (*funcao)(float);
 
 float f1(float x){
-	return pow(x,3)-(2*x)+4;
+	return pow(x,5)-((10/9)*pow(x,3))+(5*x)/21;
 }
 
 float f2(float x){
@@ -21,73 +21,159 @@ float f3(float x){
 int menu_inicial() {
 	int op;
 	
-	printf("\nMENU INICIAL\n1- Método da Bisseção\n2- Método da Posição Falsa\n3- Método da Posição Falsa Modificado\n4- Método de Newton\n5- Método de Newton Modificado\n6- Derivada Primeira\n7- Derivada Segunda\n8- Jacobiano\n9- Hessiana\n10- Sair do Programa\nOpção: ");
+	printf("\n\n\nMENU INICIAL\n1- Método da Bisseção\n2- Método da Posição Falsa\n3- Método da Posição Falsa Modificado\n4- Método de Newton\n5- Método de Newton Modificado\n6- Derivada Primeira\n7- Derivada Segunda\n8- Jacobiano\n9- Hessiana\n10- Sair do Programa\nOpção: ");
 	scanf(" %d", &op);
 	
 	return op;
 }
 
-float x(){ //Permite ao usuário indicar o valor de X
-	float x;
-	
-	printf("\nx =");
-	scanf(" %f", &x);
-	return x;
-}
-
-float bissecao(float e, int it, float f1(float x), float a, float b, int *cont_it){
+float bissecao(float e, int it, float a, float b){
 	int i;
 	float x;
 	
 	
 	printf("\n\nMÉTODO DA BISSEÇÃO\n\n");
 	for(i = 1; i <= it; i++){
-		printf("\nk = %d", i);
+		printf("\n\n\n\nk = %d", i);
 		x = (a+b)/2;
 		
-		printf("\nx = %f", x);
 		
-		printf("\nf(x) = %f", f1(x));
-		if (fabs(f1(x)) < e)
+		printf("\n(%f + %f)/2 = %f", a, b, x);
+		printf("\nf(%f) = %f", x, f1(x));
+		printf("\n|f(%f)| = %f", x, fabs(f1(x)));
+		
+		if (fabs(f1(x)) < e) {
+			printf("\nO módulo de f(x) é menor que a precisão. (%f < %f)", fabs(f1(x)), e);
 			return x;
+		}
 		else {
 			printf("\nf(a)*f(x) < 0?");
 			if( f1(a)*f1(x) < 0){
 				printf(" Sim: b recebe o valor de x.");
 				b = x;
+				printf("\nb = %f", b);
 			} else {
 				printf(" Não: a recebe o valor de x.");
 				a = x;
+				printf("\na = %f", a);
 			}
-			if( fabs(b-a) < 0)
-				printf("\n|b - a| = |%f|", b-a);
+			printf("\n|b - a| = |%f|", b-a);
+			
+			if( fabs(b-a) < e) {
+				printf("\nO módulo da diferença entre b e a é menor que a precisão. (%f < %f)", fabs(b-a), e);
 				return x;
+			}	
 		}
+	}
+	printf("\nO método atingiu o número máximo de iterações.");
+	return x;
+}
+
+float posicao_falsa(float e, int it, float a, float b){
+	int i;
+	float x;
+	
+	printf("\n\nMÉTODO DA POSIÇÃO FALSA\n\n");
+	
+	for(i = 1; i <= it; i++){
+		printf("\n\nk = %d", i);
+		x = (a*f1(b)-b*f1(a))/(f1(b)-f1(a));
+		
+		printf("\nx = %f", x);
+		printf("\nf(%f) = %f", x, f1(x));
+		printf("\n|f(%f)| = %f", x, fabs(f1(x)));
+		
+		if (fabs(f1(x)) < e) {
+			printf("\nO módulo de f(x) é menor que a precisão. (%f < %f)", fabs(f1(x)), e);
+			return x;
+		}
+		else {
+			printf("\nf(a)*f(x) < 0?");
+			if( f1(a)*f1(x) < 0){
+				printf(" Sim: b recebe o valor de x.");
+				b = x;
+				printf("\nb = %f", b);
+			} else {
+				printf(" Não: a recebe o valor de x.");
+				a = x;
+				printf("\na = %f", a);
+			}
+			printf("\n|b - a| = |%f|", b-a);
+			
+			if( fabs(b-a) < e) {
+				printf("\nO módulo da diferença entre b e a é menor que a precisão. (%f < %f)", fabs(b-a), e);
+				return x;
+			}	
+		}
+	}
+	printf("\nO método atingiu o número máximo de iterações.");
+	return x;
+}
+
+float posicao_falsa_modificado(float e, int it, float a, float b){
+	int i;
+	float x;
+	float x1, x2;
+	
+	printf("\n\nMÉTODO DA POSIÇÃO FALSA MODIFICADO\n\n");
+	
+	x1 = a;
+	x2 = b;
+	
+	for(i = 1; i <= it; i++){
+		
+		printf("\nxk-1 = %f\nxk = %f", x1, x2);
+		
+		printf("\n\nk = %d", i);
+		if(f1(x1)*f1(x2) > 0){
+			printf("\nf(%f)*(f%f) > 0. Usaremos f(a)/2.", x1, x2);
+			x = (a*f1(b)-b*(f1(a)/2))/f1(b)-(f1(a)/2);
+		} else {
+			x = (a*f1(b)-b*f1(a))/(f1(b)-f1(a));
+		}
+		
+		printf("\nx = %f", x);
+		printf("\nf(x) = %f", f1(x));
+		if(fabs(f1(x)) < e){
+			printf("\n|f(%f)| = |%f| = %f < %f", x, f1(x), fabs(f1(x)), e);
+			return x;
+		} else {
+			if(f1(a)*f1(x) < 0){
+				printf("\nf(a)*f(x) < 0: b recebe o valor de x.");
+				b = x;
+			} else {
+				printf("\nf(a)*f(x) > 0: a recebe o valor de x.");
+				a = x;
+			}
+			
+			printf("\n|b-a| = |%f - %f| = %f", b, a, fabs(b-a));
+			if(fabs(b-a) < e){
+				printf("\n%f < %f", fabs(b-a), e);
+				return x;
+			}
+		}
+		
+		x1 = x2;
+		x2 = x;
 	}
 }
 
-//float menu_funcoes(float (*funcao)(float)) {
-//	int op;
-//	float x;
-//	printf("\nQual função deseja calcular?\n\n1- x^3-2x+4\n2- x-x*ln(x)\n3- 10*x+x^2\nOpção: ");
-//	scanf(" %d", op);
-//	
-//	switch(op) {
-//		case 1:
-//			funcao = &f1;
-//			break;
-//		case 2:
-//			funcao = &f2;
-//			break;
-//		case 3:
-//			funcao = &f3;
-//			break;
-//		default:
-//			funcao = &f1;
-//			break;
-//	}
-//	
-//}
+float derivada_primeira(float e, int it, float x){
+	int i;
+	float fx, h = 1, erro1, erro2;
+	
+	for(i = 1; i <= it; i++){
+		
+		if(i == 1){
+			fx = ((x+h)-(x-h))/2*h;
+		}
+		
+		
+		erro = fabs()
+	}
+	return fx;
+}
+
 
 char funcao_reproc() {
 	char reproc;
@@ -112,12 +198,13 @@ int main () {
 		op_menu_inicial = menu_inicial();
 		switch (op_menu_inicial) {
 			case 1: //Método da Bisseção
-				x = x();
-				bissecao(0.001, 10, f1(x), -2, 3, 0);
+				bissecao(0.0001, 20, -0.65, -0.52);
 				break;
 			case 2: //Método da Posição Falsa
+				posicao_falsa(0.0001, 20, -0.3, 0.25);
 				break;
 			case 3: //Método da Posição Falsa Modificado
+				posicao_falsa_modificado(0.0001, 20, 0.21, 0.6);
 				break;
 			case 4: //Método de Newton
 				break;

@@ -15,7 +15,7 @@ float f2(float x){
 }
 
 float f3(float x){
-	return 10*x+pow(x,2);
+	return pow(x,2);
 }
 
 int menu_inicial() {
@@ -164,12 +164,11 @@ float derivada_primeira(float e, int it, float x){
 	float f1, f2, erro1, erro2;
 	
 	for(i = 1; i <= it; i++) {
-		printf("\n\nk = %d", i);
+		printf("\n\nk = %d\th = %f", i, h);
 		
-		printf("\nx = %f\nh = %f", x, h);
+		printf("\nx = %f", x);
 		
-		fx = ((x+h)-(x-h))/2*h;
-		
+		fx = (f3(x+h)-f3(x-h))/2*h;
 		printf("\nf'(x) = %f", fx);
 		
 		if(i == 1) {
@@ -177,16 +176,20 @@ float derivada_primeira(float e, int it, float x){
 		}
 		else if (i == 2) {
 			f2 = fx;
+			
 			if (fabs(fx) > 1)
 				erro1 = fabs(f2-f1)/fabs(fx);
 			else
 				erro1 = fabs(f2-f1)/1;
-				
-			printf("\nerro = %f", erro1);	
+			printf("\nerro = %f", erro1);
+			
 			if (erro1 < e)
 				return fx;
 		}
 		else if (i == 3) {
+			f1 = f2;
+			f2 = fx;
+			
 			if (fabs(fx) > 1)
 				erro2 = fabs(f2-f1)/fabs(fx);
 			else
@@ -198,13 +201,20 @@ float derivada_primeira(float e, int it, float x){
 		}
 		else {
 			erro1 = erro2;
+			f1 = f2;
+			f2 = fx;
+			
 			if (fabs(fx) > 1)
 				erro2 = fabs(f2-f1)/fabs(fx);
 			else
 				erro2 = fabs(f2-f1)/1;
-				
-			if(erro2 > erro1)
-				return x;
+			
+			printf("\nerro1 = %f\terro2 = %f", erro1, erro2);
+			
+			if(erro2 < e)
+				return fx;
+			else if(erro2 > erro1)
+				return fx;
 		}
 		
 		h = h/2;
@@ -249,6 +259,7 @@ int main () {
 			case 5: //Método de Newton Modificado
 				break;
 			case 6: //Derivada Primeira
+				derivada_primeira(0.01, 20, 4);
 				break;
 			case 7: //Derivada Segunda
 				break;

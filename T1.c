@@ -222,6 +222,70 @@ float derivada_primeira(float e, int it, float x){
 	return fx;
 }
 
+float derivada_segunda(float e, int it, float x){
+	int i;
+	float fx, h = 1;
+	float f1, f2, erro1, erro2;
+	
+	for(i = 1; i <= it; i++) {
+		printf("\n\nk = %d\th = %f", i, h);
+		
+		printf("\nx = %f", x);
+		
+		fx = (f3(x+(2*h))-(2*f3(x))+f3(x-(2*h)))/pow(2*h,2);
+		printf("\nf'(x) = %f", fx);
+		
+		if(i == 1) {
+			f1 = fx;
+		}
+		else if (i == 2) {
+			f2 = fx;
+			
+			if (fabs(fx) > 1)
+				erro1 = fabs(f2-f1)/fabs(fx);
+			else
+				erro1 = fabs(f2-f1)/1;
+			printf("\nerro = %f", erro1);
+			
+			if (erro1 < e)
+				return fx;
+		}
+		else if (i == 3) {
+			f1 = f2;
+			f2 = fx;
+			
+			if (fabs(fx) > 1)
+				erro2 = fabs(f2-f1)/fabs(fx);
+			else
+				erro2 = fabs(f2-f1)/1;
+				
+			printf("\nerro = %f", erro2);	
+			if (erro2 < e)
+				return fx;
+		}
+		else {
+			erro1 = erro2;
+			f1 = f2;
+			f2 = fx;
+			
+			if (fabs(fx) > 1)
+				erro2 = fabs(f2-f1)/fabs(fx);
+			else
+				erro2 = fabs(f2-f1)/1;
+			
+			printf("\nerro1 = %f\terro2 = %f", erro1, erro2);
+			
+			if(erro2 < e)
+				return fx;
+			else if(erro2 > erro1)
+				return fx;
+		}
+		
+		h = h/2;
+	}
+	return fx;
+}
+
 
 char funcao_reproc() {
 	char reproc;
@@ -262,6 +326,7 @@ int main () {
 				derivada_primeira(0.01, 20, 4);
 				break;
 			case 7: //Derivada Segunda
+				derivada_segunda(0.01, 20, 4);
 				break;
 			case 8: //Jacobiana
 				break;
